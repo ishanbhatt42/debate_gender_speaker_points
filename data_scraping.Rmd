@@ -287,7 +287,7 @@ p_value <- model %>%
 
 ```
 
-The differernce in standardized speaker scores between men and women is `r estimate` with a p-value of `r p_value`. 
+The difference in standardized speaker scores between men and women is `r estimate` with a p-value of `r p_value`. 
 
 
 
