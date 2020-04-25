@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+
 library(tidyverse)
 library(rvest)
 library(janitor)
@@ -14,6 +15,7 @@ library(reprex)
 library(gender)
 library(gt)
 library(readr)
+library(broom)
 
 ```
 
@@ -235,6 +237,7 @@ The missing tournaments are
 
 - St. Mark's (2018 Season)
 
+### Doing Some Basic Analysis
 
 ```{r standardizing the data}
 
@@ -245,10 +248,41 @@ The missing tournaments are
 ld_data_standard <- ld_data %>%
   group_by(tourn, season) %>%
   mutate(z = scale(pts_1hl))
-  
+
+# I construct a density plot for the z-score.
+
+ggplot(ld_data_standard, aes(x = z, fill = gender)) + 
+  geom_density(alpha = .6) +
+  theme_classic() + 
+  labs(
+    title = "Distribution of LD Speaker Points",
+    subtitle = "Speaker Points Standardized",
+    x = "Speaker Points",
+    y = "Density",
+    fill = "Gender"
+  )
+
+# I run a linear regression on the data.
+
+model <- lm(data = ld_data_standard, z ~ gender) %>%
+  tidy() %>%
+  slice(2) 
+
+# I grab the estimated average difference.
+
+estimate <- model %>%
+  pull(estimate)
+
+# I grab the p-value for the regression.
+
+p_value <- model %>%
+  pull(p.value) %>%
+  round(10)
+
+
 ```
 
-
+The differernce in standardized speaker scores between men and women is `r estimate` with a p-value of `r p_value`. 
 
 
 
