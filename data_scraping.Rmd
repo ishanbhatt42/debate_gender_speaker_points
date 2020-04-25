@@ -249,6 +249,10 @@ ld_data_standard <- ld_data %>%
   group_by(tourn, season) %>%
   mutate(z = scale(pts_1hl))
 
+# I save the data into a csv file.
+
+write.csv(x = ld_data_standard, "debate_points_gender/raw-data/ld_data_standard.csv")
+
 # I construct a density plot for the z-score.
 
 ggplot(ld_data_standard, aes(x = z, fill = gender)) + 
