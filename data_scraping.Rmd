@@ -247,7 +247,8 @@ The missing tournaments are
 
 ld_data_standard <- ld_data %>%
   group_by(tourn, season) %>%
-  mutate(z = scale(pts_1hl))
+  mutate(z = scale(pts_1hl)) %>%
+  mutate(gender_numeric = if_else(gender == "female", 0, 1))
 
 # I save the data into a csv file.
 
