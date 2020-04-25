@@ -1,0 +1,256 @@
+---
+title: "data_scraping"
+author: "Ishan Bhatt"
+date: "4/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(rvest)
+library(janitor)
+library(reprex)
+library(gender)
+library(gt)
+library(readr)
+
+```
+
+### Writing the Functions
+
+```{r writing the functions}
+
+# The functions I write here are different
+# because different tournaments upload their
+# data differently. Each one attempts to result in 
+# a data set with the same variables in the same
+# format so they can be merged.
+
+scrape <- function(tournament, year, link) {
+  
+# Grab the table and store it as a data 
+# frame. Clean the names and add two columns 
+# using the tournament and year arguments.
+  
+x <- read_html(link) %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  mutate(tourn = tournament) %>%
+  mutate(season = year)
+
+# Create the gender table for the 
+# first names. Select out the data that 
+# we don't need - we only need the first name
+# and the gender.
+
+x_gendered <- gender(names = x$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+# Join it with the earlier tibble and select
+# a uniform number of columns so we can stack
+# tournaments on top of each other.
+
+x %>%
+  left_join(x_gendered, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry, state, pts_1hl, tourn, season, gender)
+
+}
+
+# Same deal with this function, but some tournaments upload their
+# data with the names not separated into first and last.
+# The only difference here is I've added a "separate" which
+# takes the first name.
+
+scrape_names <- function(tournament, year, link){
+
+x <- read_html(link) %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  separate(name, into = c("first", "last"), sep = " ") %>%
+  mutate(tourn = tournament) %>%
+  mutate(season = year)
+
+x_gendered <- gender(names = x$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+x %>%
+  left_join(x_gendered, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry = code, state, pts_1hl = pts_pm_1hl, tourn, season, gender)
+
+}
+
+# Same deal again, but for some stupid tournaments
+# that try to be special by labeling their data
+# different things.
+
+scrape_p_pts <- function(tournament, year, link){
+
+x <- read_html(link) %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  separate(name, into = c("first", "last"), sep = " ") %>%
+  mutate(tourn = tournament) %>%
+  mutate(season = year)
+
+x_gendered <- gender(names = x$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+x %>%
+  left_join(x_gendered, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry = code, state, pts_1hl = p_pts_1hl, tourn, season, gender)
+
+}
+
+```
+
+The functions I ended up writing are variations on this:
+
+```{r print the function, echo = TRUE}
+
+scrape <- function(tournament, year, link) {
+  
+x <- read_html(link) %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  mutate(tourn = tournament) %>%
+  mutate(season = year)
+
+x_gendered <- gender(names = x$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+x %>%
+  left_join(x_gendered, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry, state, pts_1hl, tourn, season, gender)
+
+}
+
+```
+
+
+### Gathering the Data
+
+```{r gather the ld data, warning = FALSE}
+
+apple_valley_2020 <- scrape("apple_valley", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13417&result_id=104824")
+
+bronx_2020 <- scrape("bronx", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=11596&result_id=101619")
+
+emory_2020 <- scrape_names("emory", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13465&result_id=117183")
+
+glenbrooks_2020 <- scrape_names("glenbrooks", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=12924&result_id=108727")
+
+greenhill_2020 <- scrape("greenhill", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13327&result_id=99721")
+
+harvard_2020 <- scrape("harvard", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13670&result_id=122695")
+
+hw_2020 <- scrape("hw", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=14709&result_id=115968")
+
+sm_2020 <- scrape_names("st_marks", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13406&result_id=101326")
+
+valley_2020 <- scrape("valley", 2020, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=13453&result_id=99720")
+
+apple_valley_2019 <- scrape("apple_valley", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10560&result_id=74070")
+
+bronx_2019 <- scrape("bronx", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=8739&result_id=71884")
+
+emory_2019 <- scrape("emory", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10796&result_id=84585'")
+
+glenbrooks_2019 <- scrape("glenbrooks", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=9270&result_id=77015")
+
+greenhill_2019 <- scrape_p_pts("greenhill", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10561&result_id=69780")
+
+hw_2019 <- scrape("hw", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=11584&result_id=83655")
+
+sm_2019 <- scrape("st_marks", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10720&result_id=71679")
+
+valley_2019 <- scrape("valley", 2019, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10610&result_id=69976")
+
+apple_valley_2018 <- scrape("apple_valley", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7975&result_id=48838")
+
+cal_2018 <- scrape_p_pts("cal", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=8476&result_id=61295")
+  
+emory_2018 <- scrape("emory", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7663&result_id=58285")
+  
+glenbrooks_2018 <- scrape("glenbrooks", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7581&result_id=51819")
+  
+valley_2018 <- scrape("valley", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7831&result_id=44254")
+
+ld_data <- merge(apple_valley_2018, apple_valley_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(apple_valley_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(bronx_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(bronx_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(cal_2018, all.x = TRUE, all.y = TRUE) %>%
+  merge(emory_2018, all.x = TRUE, all.y = TRUE) %>%
+  merge(emory_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(emory_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(glenbrooks_2018, all.x = TRUE, all.y = TRUE) %>%
+  merge(glenbrooks_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(glenbrooks_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(greenhill_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(greenhill_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(harvard_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(hw_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(hw_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(sm_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(sm_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(valley_2018, all.x = TRUE, all.y = TRUE) %>%
+  merge(valley_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(valley_2020, all.x = TRUE, all.y = TRUE) %>%
+  filter(! is.na(gender))
+
+```
+
+The missing tournaments are
+
+- Bronx (2018 Season)
+
+- Cal (2019, 2020 Season)
+
+- Greenhill (2018 Season)
+
+- Harvard (2018, 2019 Sesason)
+
+- Harvard-Westlake (2018 Season)
+
+- St. Mark's (2018 Season)
+
+
+```{r standardizing the data}
+
+# Within each tournament, create z-scores
+# for speaker scores to correct for imbalances
+# between tournaments.
+
+ld_data_standard <- ld_data %>%
+  group_by(tourn, season) %>%
+  mutate(z = scale(pts_1hl))
+  
+```
+
+
+
+
+
+
+
