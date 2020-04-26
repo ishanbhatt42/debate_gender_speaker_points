@@ -110,6 +110,7 @@ ui <- fluidPage(
 # I'll run later.
 
           mainPanel(
+            h3("Plot Display"),
             plotOutput("explore_plot"),
             verbatimTextOutput("explore_lm"),
             verbatimTextOutput("explore_boot"),
