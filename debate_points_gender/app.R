@@ -119,8 +119,21 @@ ui <- fluidPage(
         
         tabPanel(
             "Findings",
-            titlePanel("Results of Statistical Analysis")
-        ),
+            titlePanel("Results of Statistical Analysis"),
+            sidebarLayout(
+                sidebarPanel(
+                    h3("An Initial Regression"),
+                    h3("A Two-Sample T Test"),
+                    ),
+                mainPanel(
+                    h3("The Total Distribution"),
+                    plotOutput("main_plot"),
+                    verbatimTextOutput("main_lm"),
+                    h3("Speaker Point Difference Over Time"),
+                    plotOutput("main_plot_time")
+                    )
+                )
+            ),
         
         # Add the about page.
         
@@ -130,7 +143,6 @@ ui <- fluidPage(
             h3("The Data"),
         )
     )
-
 
 )
 
@@ -287,6 +299,68 @@ server <- function(input, output) {
         
             print(boot_plot)
         }
+        
+    })
+    
+    output$main_plot <- renderPlot ({
+        
+        x <- ld_data
+        
+        x_avg <- x %>%
+            group_by(gender_numeric) %>%
+            summarize(mean_pts = mean(z))
+        
+        ggplot(data = x, aes(x = z, fill = gender)) + 
+            geom_density(alpha = .6) +
+            labs(
+                title = "Distribution of Speaker Points by Gender",
+                x = "Points (1 High Low, Standardized)",
+                y = "Density",
+                fill = "Gender"
+            ) +
+            theme_classic()
+        
+    })
+    
+    output$main_lm <- renderText ({
+        
+        x <- ld_data
+        
+        x_model <- lm(data = x, z ~ gender) %>%
+            tidy()
+        
+        avg <- x_model %>%
+            slice(2) %>%
+            pull(estimate) %>%
+            round(3)
+        
+        p_value <- x_model %>%
+            slice(2) %>%
+            pull(p.value) %>%
+            round(15)
+        
+        paste("The regression gives you an average difference of ", avg, " with a p-value of ", p_value, ".")
+        
+    })
+    
+    output$main_plot_time <- renderPlot ({
+        
+        x <- ld_data %>%
+            group_by(season, tourn, gender) %>%
+            summarize(avg = mean(z))
+        
+        ggplot(x, aes(x = season, y = avg, color = gender)) +
+            geom_point() +
+            scale_x_continuous(breaks = c(2018, 2019, 2020)) +
+            geom_smooth(aes(x = season, y = avg), method = lm) +
+            theme_classic() +
+            labs(
+                title = "LD Speaker Point Average Over Time", 
+                subtitle = "Stratified by Gender",
+                color = "Gender",
+                x = "Season",
+                y = "Average Points"
+            )
         
     })
 }

@@ -284,10 +284,24 @@ p_value <- model %>%
   pull(p.value) %>%
   round(10)
 
-
 ```
 
 The difference in standardized speaker scores between men and women is `r estimate` with a p-value of `r p_value`. 
+
+```{r}
+
+dudes <- ld_data_standard %>%
+  filter(gender == "male")
+
+girls <- ld_data_standard %>%
+  filter(gender == "female")
+
+t.test(dudes$z, girls$z, alternative = c("two.sided"))
+
+```
+
+
+
 
 
 
