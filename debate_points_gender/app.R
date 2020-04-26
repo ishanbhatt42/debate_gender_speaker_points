@@ -216,11 +216,11 @@ ui <- fluidPage(
               which tournaments uploaded their full speaker data before that is low. This data set is an extremely comphrehensive 
               sample of the speaker points data that is currently available to access."),
         h3("Sources"),
-        p("I sourced all the tournament results from", tags$a(href = "https://www.tabroom.com/index/index.mhtml", "Tabroom"), ", an online results 
+        p("I sourced all the tournament results from", tags$a(href = "https://www.tabroom.com/index/index.mhtml", "Tabroom,"), "an online results 
               tabulation software used by major national tournaments."),
-        p("The gender approximation package can be found", tags$a(href = "https://github.com/ropensci/gender", "here"), "."),
+        p("The gender approximation package can be found", tags$a(href = "https://github.com/ropensci/gender", "here.")),
         p("The source code for the data, the raw data, and the function I created to scrape results from 
-              tabroom can be found", tags$a(href = "https://github.com/ishanbhatt42/ldgendernorms", "here"), "."),
+              tabroom can be found", tags$a(href = "https://github.com/ishanbhatt42/ldgendernorms", "here.")),
         h3("About Me"),
         p("I'm a freshman majoring in Government and Economics and because 
               I'm interested in the social sciences, I'm doing a little data science 

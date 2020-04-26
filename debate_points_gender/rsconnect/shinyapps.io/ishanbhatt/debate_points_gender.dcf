@@ -1,0 +1,12 @@
+name: debate_points_gender
+title: debate_points_gender
+username:
+account: ishanbhatt
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2187216
+bundleId: 3065625
+url: https://ishanbhatt.shinyapps.io/debate_points_gender/
+when: 1587873212.88616
+asMultiple: FALSE
+asStatic: FALSE
