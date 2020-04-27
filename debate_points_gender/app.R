@@ -216,6 +216,9 @@ ui <- fluidPage(
         p("Third, this data set stretches back to the 2017-2018 season but does not go futher because the rate at 
               which tournaments uploaded their full speaker data before that is low. This data set is an extremely comphrehensive 
               sample of the speaker points data that is currently available to access."),
+        p("Fourth, some number of observations are excluded because the gender package was unable to approximate their gender. Additionally,
+          the package basically makes a guess for each observation. This methodology is indeed one of the limits of this analysis,
+          but, currently, there is no better methodology to deal with the question of gender in debate."),
         h3("Sources"),
         p("I sourced all the tournament results from", tags$a(href = "https://www.tabroom.com/index/index.mhtml", "Tabroom,"), "an online results 
               tabulation software used by major national tournaments."),
