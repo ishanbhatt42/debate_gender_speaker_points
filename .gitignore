@@ -4,3 +4,6 @@
 .Ruserdata
 
 *.Rproj
+rsconnect*
+
+.DS_Store
