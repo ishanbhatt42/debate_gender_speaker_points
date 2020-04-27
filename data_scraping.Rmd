@@ -245,10 +245,22 @@ The missing tournaments are
 # for speaker scores to correct for imbalances
 # between tournaments.
 
+# I also use the census regions to give regions
+# to each debater.
+
 ld_data_standard <- ld_data %>%
   group_by(tourn, season) %>%
   mutate(z = scale(pts_1hl)) %>%
-  mutate(gender_numeric = if_else(gender == "female", 0, 1))
+  mutate(gender_numeric = if_else(gender == "female", 0, 1)) %>%
+  mutate(debater_region = case_when(state %in% c("WA", "OR", "CA", "AL", "HI") ~ "pacific",
+                            state %in% c("NV", "AZ", "NM", "CO", "UT", "WY", "ID", "MT") ~ "mountain",
+                            state %in% c("ND", "SD", "NE", "KS", "MN", "IA", "MO") ~ "west_north_central",
+                            state %in% c("WI", "IL", "IN", "OH", "MI") ~ "east_north_central",
+                            state %in% c("TX", "OK", "AR", "LA") ~ "west_south_central",
+                            state %in% c("KY", "TN", "MS", "AL") ~ "east_south_central",
+                            state %in% c("FL", "GA", "SC", "NC", "VA", "WV", "MD", "DE", "DC") ~ "south_atlantic",
+                            state %in% c("PA", "NY", "NJ") ~ "mid_atlantic",
+                            state %in% c("CT", "RI", "MA", "NH", "VT", "ME") ~ "new_england"))
 
 # I save the data into a csv file.
 
@@ -288,8 +300,7 @@ p_value <- model %>%
 
 The difference in standardized speaker scores between men and women is `r estimate` with a p-value of `r p_value`. 
 
-```{r testing stuff out}
-
+```{r testing stuff out for t test}
 dudes <- ld_data_standard %>%
   filter(gender == "male")
 
@@ -297,11 +308,41 @@ girls <- ld_data_standard %>%
   filter(gender == "female")
 
 t.test(dudes$z, girls$z, alternative = c("two.sided"))
+```
 
+
+```{r testing stuff out for state graphs}
 
 ld_data_standard %>%
   group_by(state) %>%
-  summarize(n = n(), avg = mean(z)) 
+  summarize(n = n(), avg = mean(z)) %>%
+  ggplot(aes(x = n, y = avg)) + geom_point() +
+  geom_smooth(method = lm) +
+  labs(
+    title = "State Size and Speaker Point Average",
+    subtitle = "Testing the Number of Competitors from Each State versus the State's Point Average",
+    x = "Number of Competitors",
+    y = "Average Speaker Points"
+  ) +
+  theme_classic()
+
+```
+
+```{r}
+
+ld_data_standard %>%
+  group_by(debater_region) %>%
+  filter(! is.na(debater_region)) %>%
+  summarize(n = n(), avg = mean(z)) %>%
+  ggplot(aes(x = n, y = avg)) + geom_point() +
+  geom_smooth(method = lm) +
+  labs(
+    title = "Region Size and Speaker Point Average",
+    subtitle = "Testing the Number of Competitors from Each Region versus the State's Point Average",
+    x = "Number of Competitors",
+    y = "Average Speaker Points"
+  ) +
+  theme_classic()
 
 ```
 
