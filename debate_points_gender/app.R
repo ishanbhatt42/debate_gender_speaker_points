@@ -39,7 +39,6 @@ ui <- fluidPage(
 # Add a picker for the plot type.
 
       "Explore the Data",
-      fluidPage(
         titlePanel("Speaker Point Totals by Gender"),
         sidebarLayout(
           sidebarPanel(
@@ -117,7 +116,6 @@ ui <- fluidPage(
             plotOutput("bootstrap_plot")
           )
         )
-      )
     ),
 
 # Add the findings tab. Here, I do most of my
@@ -240,8 +238,8 @@ ui <- fluidPage(
 # Define server logic.
 
 server <- function(input, output) {
-    
-# Here's the main plot on teh explore the data page.
+  
+# Here's the main plot on the explore the data page.
     
   output$explore_plot <- renderPlot({
       
