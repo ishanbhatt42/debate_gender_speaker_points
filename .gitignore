@@ -4,6 +4,7 @@
 .Ruserdata
 
 *.Rproj
-rsconnect*
+
+debate_points_gender/rsconnect
 
 .DS_Store
