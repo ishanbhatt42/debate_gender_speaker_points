@@ -88,7 +88,7 @@ ui <- fluidPage(
               inputId = "rep_size",
               label = "Choose the Bootstrap Replicate Number",
               min = 10,
-              max = 1000,
+              max = 500,
               value = 500,
               ticks = FALSE,
               sep = ""
@@ -221,7 +221,7 @@ ui <- fluidPage(
               tabulation software used by major national tournaments."),
         p("The gender approximation package can be found", tags$a(href = "https://github.com/ropensci/gender", "here.")),
         p("The source code for the data, the raw data, and the function I created to scrape results from 
-              tabroom can be found", tags$a(href = "https://github.com/ishanbhatt42/ldgendernorms", "here.")),
+              tabroom can be found", tags$a(href = "https://github.com/ishanbhatt42/debate_gender_speaker_points", "here.")),
         h3("About Me"),
         p("I'm a freshman majoring in Government and Economics and because 
               I'm interested in the social sciences, I'm doing a little data science 
