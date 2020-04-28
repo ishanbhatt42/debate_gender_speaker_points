@@ -201,7 +201,7 @@ ui <- fluidPage(
 
     tabPanel(
       "Misc.",
-      titlePanel("Intersting and Random Investigations Into the Data"),
+      titlePanel("Interesting and Random Investigations Into the Data"),
       sidebarLayout(
         sidebarPanel(
           h3("Interesting Findings"),
