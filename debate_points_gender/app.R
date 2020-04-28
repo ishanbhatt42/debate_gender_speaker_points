@@ -146,6 +146,10 @@ ui <- fluidPage(
       titlePanel("Results of Analysis"),
       sidebarLayout(
         sidebarPanel(
+        h3("Main Takeaway"),
+        p("The most important information to take away from this project is that there is a statistically significant and strong
+          relationship between gender and speaker points. As the regression and t-test below will reveal, being a dude
+          does wonders for your points."),
           h3("An Initial Regression"),
           p("I ran a basic linear regression on the data, which revealed an average
                       difference of 0.255 standardized speaker points between the two genders. That is,
