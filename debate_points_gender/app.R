@@ -73,18 +73,18 @@ ui <- fluidPage(
             selected = ld_tournaments
           ),
           pickerInput(
+            inputId = "explore_plot_region",
+            label = "Choose the Debaters' Region",
+            choices = ld_regions,
+            multiple = TRUE,
+            selected = ld_regions
+          ),
+          pickerInput(
             inputId = "explore_plot_type",
             label = "Choose the Plot Type",
             choices = c("Density", "Point", "Averages"),
             multiple = FALSE,
             selected = "Density"
-          ),
-          pickerInput(
-              inputId = "explore_plot_region",
-              label = "Choose the Debaters' Region",
-              choices = ld_regions,
-              multiple = TRUE,
-              selected = ld_regions
           ),
 
           # Add two select boxes. One to choose the size
@@ -446,10 +446,15 @@ server <- function(input, output) {
       bootstrap_mean <- bootstrap %>%
         summarize(mean(estimate)) %>%
         round(4)
+      
+      bootstrap_var <- bootstrap %>%
+        summarize(var(estimate)) %>%
+        round(4)
 
       paste0(
         "Bootstrapping the data (size = ", x_number, ", replications = ", input$rep_size,
-        ") produced an average difference of ", bootstrap_mean, "."
+        ") produced an average difference of ", bootstrap_mean, ". \nThe variance is ", 
+        bootstrap_var
       )
     }
   })

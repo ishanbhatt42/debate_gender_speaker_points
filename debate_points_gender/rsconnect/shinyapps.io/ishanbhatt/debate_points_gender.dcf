@@ -5,8 +5,8 @@ account: ishanbhatt
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2187216
-bundleId: 3075184
+bundleId: 3075206
 url: https://ishanbhatt.shinyapps.io/debate_points_gender/
-when: 1588047042.09062
+when: 1588047843.5456
 asMultiple: FALSE
 asStatic: FALSE
