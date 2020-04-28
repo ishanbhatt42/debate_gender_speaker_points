@@ -317,9 +317,6 @@ ld_data_standard %>%
   group_by(state) %>%
   summarize(n = n(), avg = mean(z)) %>%
   arrange(desc(n)) %>%
-  summarize(cor(n, avg))
-
- %>%
   ggplot(aes(x = n, y = avg)) + geom_point() +
   geom_smooth(method = lm) +
   labs(
@@ -331,24 +328,15 @@ ld_data_standard %>%
   theme_classic()
 ```
 
-```{r}
+```{r testing multiple regression}
 
-ld_data_standard %>%
-  group_by(debater_region) %>%
-  filter(! is.na(debater_region)) %>%
-  summarize(n = n(), avg = mean(z)) %>%
-  summarize(cor(n, avg))
+lm(data = ld_data_standard, z ~ debater_region * gender) %>% 
+  tidy()
 
-%>%
-  ggplot(aes(x = n, y = avg)) + geom_point() +
-  geom_smooth(method = lm) +
-  labs(
-    title = "Region Size and Speaker Point Average",
-    subtitle = "Testing the Number of Competitors from Each Region versus the State's Point Average",
-    x = "Number of Competitors",
-    y = "Average Speaker Points"
-  ) +
-  theme_classic()
+
+Female in ENC - (intercept)
+
+female in ESC - (intercept)
 
 ```
 
