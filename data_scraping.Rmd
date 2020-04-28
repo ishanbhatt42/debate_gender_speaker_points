@@ -316,6 +316,10 @@ t.test(dudes$z, girls$z, alternative = c("two.sided"))
 ld_data_standard %>%
   group_by(state) %>%
   summarize(n = n(), avg = mean(z)) %>%
+  arrange(desc(n)) %>%
+  summarize(cor(n, avg))
+
+ %>%
   ggplot(aes(x = n, y = avg)) + geom_point() +
   geom_smooth(method = lm) +
   labs(
@@ -325,7 +329,6 @@ ld_data_standard %>%
     y = "Average Speaker Points"
   ) +
   theme_classic()
-
 ```
 
 ```{r}
@@ -334,6 +337,9 @@ ld_data_standard %>%
   group_by(debater_region) %>%
   filter(! is.na(debater_region)) %>%
   summarize(n = n(), avg = mean(z)) %>%
+  summarize(cor(n, avg))
+
+%>%
   ggplot(aes(x = n, y = avg)) + geom_point() +
   geom_smooth(method = lm) +
   labs(
