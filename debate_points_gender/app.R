@@ -42,7 +42,7 @@ ld_regions <- tibble(
 ui <- fluidPage(
   navbarPage(
     "Gender's Effect on Speaker Points in National Circuit Lincoln-Douglas Debate",
-    theme = shinytheme("yeti"),
+    theme = shinytheme("sandstone"),
     tabPanel(
 
       # Add a page to explore the data. Within it,
@@ -266,6 +266,10 @@ ui <- fluidPage(
         p("Fourth, some number of observations are excluded because the gender package was unable to approximate their gender. Additionally,
           the package basically makes a guess for each observation. This methodology is indeed one of the limits of this analysis,
           but, currently, there is no better methodology to deal with the question of gender in debate."),
+        p("Fifth, I worry about the strength of the modeling for regions. While the available data on the internet provided sufficient observations
+          for modeling gender significantly, stratifying that data by region decreased the sample size for certain regions that lack many 
+          competitors. For example, regions such as East South Central (MS, AL, TN, KY), which only had 46 tournament entries in the last three years, do not provide
+          sufficient data for a model."),
         h3("Sources"),
         p("I sourced all the tournament results from", tags$a(href = "https://www.tabroom.com/index/index.mhtml", "Tabroom,"), "an online results 
               tabulation software used by major national tournaments."),
@@ -624,7 +628,12 @@ server <- function(input, output) {
               
               final_estimate <- estimate + intercept
               
-              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "),\n then they will average ", final_estimate, " speaker points, standardized.")
+              stdr <-  x %>%
+                  filter(term == "gendermale") %>%
+                  pull(std.error) %>%
+                  round(5)
+                  
+              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "),\nthen they will average ", final_estimate, " speaker points, standardized. \nThe standard error is ", stdr, ".")
             
           } else {
               
@@ -647,10 +656,16 @@ server <- function(input, output) {
                       slice(1:9) %>%
                       filter(str_detect(term, input$model_region)) %>%
                       pull(estimate)
+                  
+                  stdr <- x %>%
+                      slice(11:18) %>%
+                      filter(str_detect(term, input$model_region)) %>%
+                      pull(std.error) %>%
+                      round(5)
                 
                   final_estimate <- estimate + intercept + first_offset + second_offset
                   
-                  paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \n then they will average ", final_estimate, " speaker points, standardized.")
+                  paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \nthen they will average ", final_estimate, " speaker points, standardized. \nThe standard error is ", stdr, ".")
                   
               }
               
@@ -664,7 +679,12 @@ server <- function(input, output) {
                   filter(term == "(Intercept)") %>%
                   pull(estimate)
               
-              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \n then they will average ", final_estimate, " speaker points, standardized.")
+              stdr <- x %>%
+                  filter(term == "(Intercept)") %>%
+                  pull(std.error) %>%
+                  round(5)
+              
+              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \nthen they will average ", final_estimate, " speaker points, standardized. \nThe standard error is ", stdr, ".")
     
           } else {
               
@@ -681,7 +701,13 @@ server <- function(input, output) {
               
               final_estimate <- estimate + intercept
               
-              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \n then they will average ", final_estimate, " speaker points, standardized.")
+              stdr <- x %>%
+                  slice(1:9) %>%
+                  filter(str_detect(term, input$model_region)) %>%
+                  pull(std.error) %>%
+                  round(5)
+              
+              paste0("If the debater is of gender ", gender_text, " and from the region (", input$model_region, "), \nthen they will average ", final_estimate, " speaker points, standardized. \nThe standard error is ", stdr, ".")
           }
           }
       
