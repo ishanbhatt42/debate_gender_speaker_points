@@ -324,7 +324,7 @@ ld_data_standard <- ld_data %>%
                             state %in% c("KY", "TN", "MS", "AL") ~ "east_south_central",
                             state %in% c("FL", "GA", "SC", "NC", "VA", "WV", "MD", "DE", "DC") ~ "south_atlantic",
                             state %in% c("PA", "NY", "NJ") ~ "mid_atlantic",
-                            state %in% c("CT", "RI", "MA", "NH", "VT", "ME") ~ "new_england"))
+                            state %in% c("CT", "RI", "MA", "NH", "VT", "ME") ~ "new_england")) 
 
 # I save the data into a csv file.
 
@@ -390,8 +390,25 @@ ld_data_standard %>%
     y = "Average Speaker Points"
   ) +
   theme_classic()
+
 ```
 
+
+
+```{r}
+
+
+
+outlier <- quantile(ld_data_standard$z, probs = c(0.25, 0.75))
+
+IQR <- outlier[2] - outlier[1]
+
+lower_range <- outlier[1] - IQR
+
+upper_range <- outlier[2] + IQR
+
+
+```
 
 
 

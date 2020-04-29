@@ -6,9 +6,21 @@ library(shinyWidgets)
 library(infer)
 library(broom)
 
-# Read in the data.
+# Read in the data. Exclude outliers based on 1.5*IQR.
 
 ld_data <- read_csv("raw-data/ld_data_standard.csv")
+
+outlier <- quantile(ld_data$z, probs = c(0.25, 0.75))
+
+IQR <- outlier[2] - outlier[1]
+
+lower_range <- outlier[1] - IQR
+
+upper_range <- outlier[2] + IQR
+
+ld_data_outliers <- ld_data %>%
+  mutate(outlier = case_when(z > upper_range ~ TRUE,
+                             z < lower_range ~ TRUE))
 
 # Define a list of the tournaments for input purposes.
 
@@ -24,6 +36,8 @@ ld_tournaments <- tibble(
   "St. Mark's Heart of Texas" = "st_marks",
   "Valley Mid America Cup" = "valley"
 )
+
+# Define a list of regions.
 
 ld_regions <- tibble(
     "Pacific" = "pacific",
@@ -296,6 +310,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
+  
   # Here's the main plot on the explore the data page.
 
   output$explore_plot <- renderPlot({
