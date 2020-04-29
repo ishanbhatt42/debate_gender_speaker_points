@@ -259,8 +259,8 @@ ui <- fluidPage(
         p("First, this data set contains every octafinals bid tournament
               in national circuit Lincoln-Douglas debate. This refers to the most prestigious regular season tournaments, which qualify
               their top sixteen debaters to the year-end national tournament, the Tournament of Champions. The tournaments 
-              that are missing to due incomplete tabulation on their part are Bronx (2018), Cal (2019, 2020), 
-              Greenhill (2018), Harvard (2018, 2019), Harvard-Westlake (2018), and St. Mark's (2018)."),
+              that are missing to due incomplete tabulation on their part are Bronx (2018), 
+              Greenhill (2018), Harvard (2018, 2019), and Harvard-Westlake (2018)."),
         p("Second, due to differences in the preliminary rounds at each tournament, the one-high-low scores of 
               each observation have been standardized within their tournament. The analysis in this project uses
               a z-score assigned to each observation based on their speaker points at that tournament."),
@@ -454,7 +454,7 @@ server <- function(input, output) {
       paste0(
         "Bootstrapping the data (size = ", x_number, ", replications = ", input$rep_size,
         ") produced an average difference of ", bootstrap_mean, ". \nThe variance is ", 
-        bootstrap_var
+        bootstrap_var, "."
       )
     }
   })

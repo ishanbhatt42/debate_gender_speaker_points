@@ -16,6 +16,7 @@ library(gender)
 library(gt)
 library(readr)
 library(broom)
+library(readr)
 
 ```
 
@@ -198,6 +199,70 @@ glenbrooks_2018 <- scrape("glenbrooks", 2018, "https://www.tabroom.com/index/tou
   
 valley_2018 <- scrape("valley", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7831&result_id=44254")
 
+# Have to do some special work for cal here
+# because the data is in a .csv format and not 
+# scraped from tabroom.
+
+# I have to scrape the entries list and 
+# and grab the states to join them with the
+# list that is missing the states.
+
+cal_states <- read_html("https://www.tabroom.com/index/tourn/fields.mhtml?tourn_id=13822&event_id=115894") %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  separate(locale, into = "state", sep = "/") %>%
+  select("entry" = "code", "state")
+
+cal_2020_initial <- read_csv("~/Desktop/Harvard/Harvard 2019-20 Spring/Data Science/Data Science Projects/debate_gender_speaker_points/debate_points_gender/raw-data/CalInvitationalUCBerkeleyVarsityLDSpeakers.csv") %>%
+  separate(Name, into = c("first", "last"), sep = " ") %>%
+  select(first, last, "entry" = "Code", "pts_1hl" = "Adjusted Judge Points Variance in Prelims") %>%
+  mutate(tourn = "cal", season = 2020) %>%
+  left_join(cal_states, by = c("entry" = "entry"))
+
+cal_2020_gender <- gender(names = cal_2020_initial$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+cal_2020 <- cal_2020_initial %>%
+  left_join(cal_2020_gender, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry, state, pts_1hl, tourn, season, gender)
+
+# Cal 2019 is a similar headache.Their tables 
+# were split in half for some reason, so I have to do this
+# manually.
+
+cal_2019_initial <- read_html("https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=10274&result_id=88419") %>%
+  html_nodes("table") %>%
+  html_table()
+  
+cal_2019_a <- cal_2019_initial[[1]] %>%
+  as.data.frame() %>%
+  clean_names()
+
+cal_2019_b <- cal_2019_initial[[3]] %>%
+  as.data.frame() %>%
+  clean_names()
+
+cal_2019_temp <- merge(cal_2019_a, cal_2019_b, all.x = TRUE, all.y = TRUE) %>%
+  mutate(tourn = "cal") %>%
+  mutate(season = 2019)
+
+cal_2019_gender <- gender(names = cal_2019_temp$first, years = c(1995, 2005), method = c(
+  "ssa", "ipums", "napp",
+  "kantrowitz", "genderize", "demo")) %>%
+  select(-proportion_male, -proportion_female, -year_min, -year_max)
+
+cal_2019 <- cal_2019_temp %>%
+  left_join(cal_2019_gender, by = c("first" = "name")) %>%
+  distinct() %>%
+  select(first, last, entry, state, pts_1hl, tourn, season, gender)
+
+sm_2018 <- scrape("st_marks", 2018, "https://www.tabroom.com/index/tourn/results/event_results.mhtml?tourn_id=7699&result_id=128742")
+  
 ld_data <- merge(apple_valley_2018, apple_valley_2019, all.x = TRUE, all.y = TRUE) %>%
   merge(apple_valley_2020, all.x = TRUE, all.y = TRUE) %>%
   merge(bronx_2019, all.x = TRUE, all.y = TRUE) %>%
@@ -219,6 +284,9 @@ ld_data <- merge(apple_valley_2018, apple_valley_2019, all.x = TRUE, all.y = TRU
   merge(valley_2018, all.x = TRUE, all.y = TRUE) %>%
   merge(valley_2019, all.x = TRUE, all.y = TRUE) %>%
   merge(valley_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(cal_2020, all.x = TRUE, all.y = TRUE) %>%
+  merge(cal_2019, all.x = TRUE, all.y = TRUE) %>%
+  merge(sm_2018, all.x = TRUE, all.y = TRUE) %>%
   filter(! is.na(gender))
 
 ```
@@ -227,15 +295,11 @@ The missing tournaments are
 
 - Bronx (2018 Season)
 
-- Cal (2019, 2020 Season)
-
 - Greenhill (2018 Season)
 
 - Harvard (2018, 2019 Sesason)
 
 - Harvard-Westlake (2018 Season)
-
-- St. Mark's (2018 Season)
 
 ### Doing Some Basic Analysis
 
@@ -328,17 +392,14 @@ ld_data_standard %>%
   theme_classic()
 ```
 
-```{r testing multiple regression}
-
-lm(data = ld_data_standard, z ~ debater_region * gender) %>% 
-  tidy()
 
 
-Female in ENC - (intercept)
 
-female in ESC - (intercept)
 
-```
+
+
+
+
 
 
 
