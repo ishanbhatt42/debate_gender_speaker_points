@@ -82,7 +82,7 @@ ui <- fluidPage(
           pickerInput(
             inputId = "explore_plot_type",
             label = "Choose the Plot Type",
-            choices = c("Density", "Point", "Averages"),
+            choices = c("Density", "Point"),
             multiple = FALSE,
             selected = "Density"
           ),
@@ -313,6 +313,14 @@ server <- function(input, output) {
     x_avg <- x %>%
       group_by(gender_numeric) %>%
       summarize(mean_pts = mean(z))
+    
+    # Define a second averages tibble
+    # for the addition of vertical lines for 
+    # the averages in the density plot.
+    
+    x_avg_2 <- x %>%
+      group_by(gender) %>%
+      summarize(mean_pts = mean(z))
 
     # Define three graphs for each graph type. Add
     # add laels and a nice theme_classic().
@@ -323,9 +331,11 @@ server <- function(input, output) {
         title = "Distribution of Speaker Points by Gender",
         x = "Points (1 High Low, Standardized)",
         y = "Density",
-        fill = "Gender"
+        fill = "Gender",
+        color = "Averages"
       ) +
-      theme_classic()
+      theme_classic() +
+      geom_vline(data = x_avg_2, aes(xintercept = mean_pts, color = gender), size = 1.5, alpha = .6)
 
     x_point <- ggplot(x, aes(gender_numeric, z)) +
       geom_point() +
@@ -348,34 +358,16 @@ server <- function(input, output) {
         y = "Points (1 High Low, Standardized)"
       )
 
-    # The averages plot is basically just a zoom in
-    # on the line in the above graph. It's meant to illustrate
-    # the difference in averages more closely.
-
-    x_averages <- ggplot(data = x_avg, aes(x = gender_numeric, y = mean_pts), size = 4) +
-      geom_point() +
-      scale_x_continuous("Gender", breaks = c(0, 1), labels = c("Female", "Male")) +
-      scale_color_discrete("Average") +
-      geom_smooth(data = x, aes(x = gender_numeric, y = z), method = lm) +
-      theme_classic() +
-      labs(
-        title = "Close up of best fit line illustrates difference in average speaker points",
-        y = "Points (1 High Low, Standardized)"
-      )
-
     # This chooses which plot to display based on input.
 
     if (input$explore_plot_type == "Density") {
       print(x_distrib)
-    }
-
-    if (input$explore_plot_type == "Point") {
+    } else {
+      
       print(x_point)
+      
     }
-
-    if (input$explore_plot_type == "Averages") {
-      print(x_averages)
-    }
+    
   })
 
   # For the lm, start with the same defining of data
