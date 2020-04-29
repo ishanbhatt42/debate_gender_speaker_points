@@ -335,7 +335,7 @@ server <- function(input, output) {
         color = "Averages"
       ) +
       theme_classic() +
-      geom_vline(data = x_avg_2, aes(xintercept = mean_pts, color = gender), size = 1.5, alpha = .6)
+      geom_vline(data = x_avg_2, aes(xintercept = mean_pts, color = gender), size = 1.5, alpha = 1)
 
     x_point <- ggplot(x, aes(gender_numeric, z)) +
       geom_point() +
@@ -382,6 +382,10 @@ server <- function(input, output) {
         filter(tourn %in% input$explore_tourney) %>%
         filter(debater_region %in% input$explore_plot_region)
 
+    x_number <- x %>%
+      summarize(n = n()) %>%
+      pull(n)
+    
     x_model <- lm(data = x, z ~ gender) %>%
       tidy()
 
@@ -397,7 +401,7 @@ server <- function(input, output) {
       pull(p.value) %>%
       round(10)
 
-    paste0("The average difference between speaker points for men and women is ", avg, ", which has a p-value of \n", p_value, ".")
+    paste0("The average difference between speaker points for men and women is ", avg, ", which has a p-value of \n", p_value, ". The sample size for this subset of the data is ", x_number, ".")
   })
 
   # Here's the bootstrap code. It runs a bootstrap based on
