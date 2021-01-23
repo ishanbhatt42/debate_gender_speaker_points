@@ -177,26 +177,7 @@ ui <- fluidPage(
                       indicates we ought to reject the null hypothesis that there is no difference in the set of male speaker points
                       and set of female speaker points ought. I then ran a one-sided t-test
                       with an alternative hypothesis of men speaking higher than women. The test, again,
-                      rejected the null hypothesis."),
-          h3("Further Modeling"),
-          p("I've also set up an interaction model estimating speaker points based on
-          region and gender. This lets you configure a hypothetical debater and estimate 
-            their average standardized speaker score."),
-          pickerInput(
-              inputId = "model_region",
-              label = "Choose the Debaters' Region",
-              choices = ld_regions,
-              multiple = FALSE,
-              selected = "east_north_central"
-          ),
-          pickerInput(
-              inputId = "model_gender",
-              label = "Choose the Debaters' Gender",
-              choices = c("Male" = "gendermale", 
-                          "Female" = "female"),
-              multiple = FALSE,
-              selected = "female"
-          )
+                      rejected the null hypothesis.")
         ),
 
         # I call the plots and regressions below.
@@ -207,9 +188,7 @@ ui <- fluidPage(
           h3("Testing the Data"),
           verbatimTextOutput("main_lm"),
           verbatimTextOutput("t_test"),
-          verbatimTextOutput("t_test_2"),
-          h3("Modeling Gender and Region"),
-          verbatimTextOutput("model_both")
+          verbatimTextOutput("t_test_2")
         )
       )
     ),
@@ -284,10 +263,6 @@ ui <- fluidPage(
         p("Fourth, some number of observations are excluded because the gender package was unable to approximate their gender. Additionally,
           the package basically makes a guess for each observation. This methodology is indeed one of the limits of this analysis,
           but, currently, there is no better methodology to deal with the question of gender in debate."),
-        p("Fifth, I worry about the strength of the modeling for regions. While the available data on the internet provided sufficient observations
-          for modeling gender significantly, stratifying that data by region decreased the sample size for certain regions that lack many 
-          competitors. For example, regions such as East South Central (MS, AL, TN, KY), which only had 46 tournament entries in the last three years, do not provide
-          sufficient data for a model."),
         h3("Sources"),
         p("I sourced all the tournament results from", tags$a(href = "https://www.tabroom.com/index/index.mhtml", "Tabroom,"), "an online results 
               tabulation software used by major national tournaments."),
@@ -295,9 +270,7 @@ ui <- fluidPage(
         p("The source code for the data, the raw data, and the function I created to scrape results from 
               tabroom can be found", tags$a(href = "https://github.com/ishanbhatt42/debate_gender_speaker_points", "here.")),
         h3("About Me"),
-        p("I'm a freshman majoring in Government and Economics and because 
-              I'm interested in the social sciences, I'm doing a little data science 
-              too. This project was born out of my love of competitive debate and its community."),
+        p("I'm a sophomore majoring in applied math."),
         p("You can contact me at ishanbhatt@college.harvard.edu."),
         p("Cheers,"),
         p("Ishan")
