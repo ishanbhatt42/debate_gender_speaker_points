@@ -86,13 +86,13 @@ ui <- fluidPage(
             multiple = TRUE,
             selected = ld_tournaments
           ),
-          pickerInput(
-            inputId = "explore_plot_region",
-            label = "Choose the Debaters' Region",
-            choices = ld_regions,
-            multiple = TRUE,
-            selected = ld_regions
-          ),
+          # pickerInput(
+          #   inputId = "explore_plot_region",
+          #   label = "Choose the Debaters' Region",
+          #   choices = ld_regions,
+          #   multiple = TRUE,
+          #   selected = ld_regions
+          # ),
           pickerInput(
             inputId = "explore_plot_type",
             label = "Choose the Plot Type",
@@ -105,36 +105,36 @@ ui <- fluidPage(
           # of the bootstrap. One to select to display
           # the bootstrap. I added some text to explain the bootstrap.
 
-          p(
-            "Here, I've set up a bootstrap* of the data. This will
-              give you an estimated average difference between genders, which is
-              a robustness check on the data. Bootstrapping the data slows down 
-              the app a lot, so it's initially disabled, but feel free to turn it on!"
-          ),
-          checkboxInput(
-            inputId = "display_boot_plot",
-            label = "Run the Bootstrap",
-            value = FALSE
-          ),
-          sliderInput(
-            inputId = "rep_size",
-            label = "Choose the Bootstrap Replicate Number",
-            min = 10,
-            max = 500,
-            value = 500,
-            ticks = FALSE,
-            sep = ""
-          ),
-          p(
-            "*Using the observations whatever subset of the data 
-                            you select, the bootstrap will take a random sample 
-                            with replacement of the data equating to the number of 
-                            points in the data. It will repeat this process many times 
-                            in order to create a bunch of similar data sets that 
-                            each exclude a little bit of the data. This introduces 
-                            variation into each set to check if the data is skewed 
-                            by a couple of points."
-          )
+          # p(
+          #   "Here, I've set up a bootstrap* of the data. This will
+          #     give you an estimated average difference between genders, which is
+          #     a robustness check on the data. Bootstrapping the data slows down 
+          #     the app a lot, so it's initially disabled, but feel free to turn it on!"
+          # ),
+          # checkboxInput(
+          #   inputId = "display_boot_plot",
+          #   label = "Run the Bootstrap",
+          #   value = FALSE
+          # ),
+          # sliderInput(
+          #   inputId = "rep_size",
+          #   label = "Choose the Bootstrap Replicate Number",
+          #   min = 10,
+          #   max = 500,
+          #   value = 500,
+          #   ticks = FALSE,
+          #   sep = ""
+          # ),
+          # p(
+          #   "*Using the observations whatever subset of the data 
+          #                   you select, the bootstrap will take a random sample 
+          #                   with replacement of the data equating to the number of 
+          #                   points in the data. It will repeat this process many times 
+          #                   in order to create a bunch of similar data sets that 
+          #                   each exclude a little bit of the data. This introduces 
+          #                   variation into each set to check if the data is skewed 
+          #                   by a couple of points."
+          # )
         ),
 
         # Now, I add the main panel, which calls a
@@ -162,22 +162,24 @@ ui <- fluidPage(
         sidebarPanel(
         h3("Main Takeaway"),
         p("The most important information to take away from this project is that there is a statistically significant and strong
-          relationship between gender and speaker points. As the regression and t-test below will reveal, being a dude
+          relationship between gender and speaker points. As the regression will reveal, being a dude
           does wonders for your points."),
           h3("An Initial Regression"),
-          p("I ran a basic linear regression on the data, which revealed an average
-                      difference of 0.255 standardized speaker points between the two genders. That is,
-                      the model estimates that being classified a male gives you a 0.255 point boost.
-                      This had a p-value of nearly zero (3.06e-11). This indicates a statistically
+          p("I run a standard linear regression on the data, which revealed an estimated
+                      difference of 0.227 standardized speaker points between the two genders. That is,
+                      the model estimates that being classified a male gives you a 0.227 point boost.
+                      This had a p-value of nearly zero (6.4803e-11). This indicates a statistically
                       signficant relationship between the gender and a difference in speaker 
-                      point score."),
-          h3("A Two-Sample T Test"),
-          p("I additionally ran a two-sided t-test which placed the mean difference in 
-                      speaker score in a 95% confidence interval between 0.1799355 and 0.3290768. This
-                      indicates we ought to reject the null hypothesis that there is no difference in the set of male speaker points
-                      and set of female speaker points ought. I then ran a one-sided t-test
-                      with an alternative hypothesis of men speaking higher than women. The test, again,
-                      rejected the null hypothesis.")
+                      point score.")
+        
+        # ,
+        #   h3("A Two-Sample T Test"),
+        #   p("I additionally ran a two-sided t-test which placed the mean difference in 
+        #               speaker score in a 95% confidence interval between 0.1799355 and 0.3290768. This
+        #               indicates we ought to reject the null hypothesis that there is no difference in the set of male speaker points
+        #               and set of female speaker points ought. I then ran a one-sided t-test
+        #               with an alternative hypothesis of men speaking higher than women. The test, again,
+        #               rejected the null hypothesis.")
         ),
 
         # I call the plots and regressions below.
@@ -186,9 +188,10 @@ ui <- fluidPage(
           h3("The Total Distribution"),
           plotOutput("main_plot"),
           h3("Testing the Data"),
-          verbatimTextOutput("main_lm"),
-          verbatimTextOutput("t_test"),
-          verbatimTextOutput("t_test_2")
+          verbatimTextOutput("main_lm")
+          # ,
+          # verbatimTextOutput("t_test"),
+          # verbatimTextOutput("t_test_2")
         )
       )
     ),
@@ -196,38 +199,38 @@ ui <- fluidPage(
     # This is the misc. tab, where I will continously
     # upload various explorations into the data.
 
-    tabPanel(
-      "Misc.",
-      titlePanel("Interesting and Random Investigations Into the Data"),
-      sidebarLayout(
-        sidebarPanel(
-          h3("Interesting Findings"),
-          p("This is a page where I'll post some interesting graphics using the data."),
-          p("The first graph gives the average speaker points at each tournament
-                      and maps it over time. It also divides the averages of each tournament
-                      into the average for men and women. I then map a regression line for each 
-                      gender. The standard error around the lines is further evidence of the 
-                      difference in speaker points between men and women. The divide between the 
-                      two genders seems to be increasing! I, however, would not 
-                      read too much into the change of speaker points over time, due to the small
-                      sample of three seasons."),
-          p("The next two graphs separate the observations into their states and regions. It measures
-            the number of debaters in each state/region and then the average speaks for the region. The regions
-            I use are the same as the US Census. I add
-            a basic linear regression to estimate the relationship between size of the state/region and the
-            average speaker score. This correlation is positive and somewhat strong (0.31 for states, 
-            0.53 for regions). It is likely the bumber of participants reflects the strength of debate programs in the
-            region and thus correlates towards higher speaker points.")
-        ),
-        mainPanel(
-          h3("Speaker Point Difference Over Time"),
-          plotOutput("main_plot_time"),
-          h3("Speaker Point Average and Debaters' Geographical Background"),
-          plotOutput("states_plot"),
-          plotOutput("regions_plot")
-        )
-      )
-    ),
+    # tabPanel(
+    #   "Misc.",
+    #   titlePanel("Interesting and Random Investigations Into the Data"),
+    #   sidebarLayout(
+    #     sidebarPanel(
+    #       h3("Interesting Findings"),
+    #       p("This is a page where I'll post some interesting graphics using the data."),
+    #       p("The first graph gives the average speaker points at each tournament
+    #                   and maps it over time. It also divides the averages of each tournament
+    #                   into the average for men and women. I then map a regression line for each 
+    #                   gender. The standard error around the lines is further evidence of the 
+    #                   difference in speaker points between men and women. The divide between the 
+    #                   two genders seems to be increasing! I, however, would not 
+    #                   read too much into the change of speaker points over time, due to the small
+    #                   sample of three seasons."),
+    #       p("The next two graphs separate the observations into their states and regions. It measures
+    #         the number of debaters in each state/region and then the average speaks for the region. The regions
+    #         I use are the same as the US Census. I add
+    #         a basic linear regression to estimate the relationship between size of the state/region and the
+    #         average speaker score. This correlation is positive and somewhat strong (0.31 for states, 
+    #         0.53 for regions). It is likely the bumber of participants reflects the strength of debate programs in the
+    #         region and thus correlates towards higher speaker points.")
+    #     ),
+    #     mainPanel(
+    #       h3("Speaker Point Difference Over Time"),
+    #       plotOutput("main_plot_time"),
+    #       h3("Speaker Point Average and Debaters' Geographical Background"),
+    #       plotOutput("states_plot"),
+    #       plotOutput("regions_plot")
+    #     )
+    #   )
+    # ),
 
     # Add the about page.
 
@@ -293,9 +296,7 @@ server <- function(input, output) {
 
     x <- ld_data %>%
       filter(season %in% input$explore_szn) %>%
-      filter(tourn %in% input$explore_tourney) %>%
-      filter(debater_region %in% input$explore_plot_region)
-
+      filter(tourn %in% input$explore_tourney)
     # Then, define the averages for both genders.
 
     x_avg <- x %>%
@@ -367,9 +368,8 @@ server <- function(input, output) {
       
     x <- ld_data %>%
         filter(season %in% input$explore_szn) %>%
-        filter(tourn %in% input$explore_tourney) %>%
-        filter(debater_region %in% input$explore_plot_region)
-
+        filter(tourn %in% input$explore_tourney)
+    
     x_number <- x %>%
       summarize(n = n()) %>%
       pull(n)
@@ -402,93 +402,93 @@ server <- function(input, output) {
   # code because the regression slowed down the app so much
   # I didn't want it to run at all if not selected.
 
-  output$explore_boot <- renderText({
-    if (input$display_boot_plot == TRUE) {
-      x <- ld_data %>%
-          filter(season %in% input$explore_szn) %>%
-          filter(tourn %in% input$explore_tourney) %>%
-          filter(debater_region %in% input$explore_plot_region)
-
-      x_number <- x %>%
-        summarize(n = n()) %>%
-        pull(n)
-
-      bootstrap <- rep_sample_n(tbl = x, size = x_number, replace = TRUE, reps = input$rep_size) %>%
-        group_by(replicate) %>%
-        nest() %>%
-        mutate(mod = map(data, ~ lm(data = ., z ~ gender))) %>%
-        mutate(reg_results = map(mod, ~ tidy(.))) %>%
-        mutate(estimate = map_dbl(reg_results, ~ slice(., 2) %>%
-          pull(estimate) %>%
-          round(4))) %>%
-        mutate(p_value = map_dbl(reg_results, ~ slice(., 2) %>%
-          pull(p.value) %>%
-          round(10))) %>%
-        ungroup() %>%
-        select(replicate, estimate, p_value)
-
-      bootstrap_mean <- bootstrap %>%
-        summarize(mean(estimate)) %>%
-        round(4)
-      
-      bootstrap_var <- bootstrap %>%
-        summarize(var(estimate)) %>%
-        round(4)
-
-      paste0(
-        "Bootstrapping the data (size = ", x_number, ", replications = ", input$rep_size,
-        ") produced an average difference of ", bootstrap_mean, ". \nThe variance is ", 
-        bootstrap_var, "."
-      )
-    }
-  })
-
-  # I have to run the entire bootstrap again
-  # because the objects are only defined within
-  # each output.
-
-  output$bootstrap_plot <- renderPlot({
-    if (input$display_boot_plot == TRUE) {
-      x <- ld_data %>%
-          filter(season %in% input$explore_szn) %>%
-          filter(tourn %in% input$explore_tourney) %>%
-          filter(debater_region %in% input$explore_plot_region)
-
-      x_number <- x %>%
-        summarize(n = n()) %>%
-        pull(n)
-
-      x_model <- lm(data = x, z ~ gender) %>%
-        tidy()
-
-      avg <- x_model %>%
-        slice(2) %>%
-        pull(estimate) %>%
-        round(3)
-
-      bootstrap <- rep_sample_n(tbl = x, size = x_number, replace = TRUE, reps = input$rep_size) %>%
-        group_by(replicate) %>%
-        nest() %>%
-        mutate(mod = map(data, ~ lm(data = ., z ~ gender))) %>%
-        mutate(reg_results = map(mod, ~ tidy(.))) %>%
-        mutate(estimate = map_dbl(reg_results, ~ slice(., 2) %>%
-          pull(estimate) %>%
-          round(4))) %>%
-        mutate(p_value = map_dbl(reg_results, ~ slice(., 2) %>%
-          pull(p.value) %>%
-          round(10)))
-
-      boot_plot <- ggplot(bootstrap, aes(x = replicate, y = estimate)) +
-        geom_point() +
-        geom_hline(yintercept = avg) +
-        theme_classic() +
-        labs(
-          title = "Bootstrapped Mean Difference Compared to Actual Mean Difference"
-        )
-
-      print(boot_plot)
-    }
-  })
+  # output$explore_boot <- renderText({
+  #   if (input$display_boot_plot == TRUE) {
+  #     x <- ld_data %>%
+  #         filter(season %in% input$explore_szn) %>%
+  #         filter(tourn %in% input$explore_tourney) %>%
+  #         filter(debater_region %in% input$explore_plot_region)
+  # 
+  #     x_number <- x %>%
+  #       summarize(n = n()) %>%
+  #       pull(n)
+  # 
+  #     bootstrap <- rep_sample_n(tbl = x, size = x_number, replace = TRUE, reps = input$rep_size) %>%
+  #       group_by(replicate) %>%
+  #       nest() %>%
+  #       mutate(mod = map(data, ~ lm(data = ., z ~ gender))) %>%
+  #       mutate(reg_results = map(mod, ~ tidy(.))) %>%
+  #       mutate(estimate = map_dbl(reg_results, ~ slice(., 2) %>%
+  #         pull(estimate) %>%
+  #         round(4))) %>%
+  #       mutate(p_value = map_dbl(reg_results, ~ slice(., 2) %>%
+  #         pull(p.value) %>%
+  #         round(10))) %>%
+  #       ungroup() %>%
+  #       select(replicate, estimate, p_value)
+  # 
+  #     bootstrap_mean <- bootstrap %>%
+  #       summarize(mean(estimate)) %>%
+  #       round(4)
+  #     
+  #     bootstrap_var <- bootstrap %>%
+  #       summarize(var(estimate)) %>%
+  #       round(4)
+  # 
+  #     paste0(
+  #       "Bootstrapping the data (size = ", x_number, ", replications = ", input$rep_size,
+  #       ") produced an average difference of ", bootstrap_mean, ". \nThe variance is ", 
+  #       bootstrap_var, "."
+  #     )
+  #   }
+  # })
+  # 
+  # # I have to run the entire bootstrap again
+  # # because the objects are only defined within
+  # # each output.
+  # 
+  # output$bootstrap_plot <- renderPlot({
+  #   if (input$display_boot_plot == TRUE) {
+  #     x <- ld_data %>%
+  #         filter(season %in% input$explore_szn) %>%
+  #         filter(tourn %in% input$explore_tourney) %>%
+  #         filter(debater_region %in% input$explore_plot_region)
+  # 
+  #     x_number <- x %>%
+  #       summarize(n = n()) %>%
+  #       pull(n)
+  # 
+  #     x_model <- lm(data = x, z ~ gender) %>%
+  #       tidy()
+  # 
+  #     avg <- x_model %>%
+  #       slice(2) %>%
+  #       pull(estimate) %>%
+  #       round(3)
+  # 
+  #     bootstrap <- rep_sample_n(tbl = x, size = x_number, replace = TRUE, reps = input$rep_size) %>%
+  #       group_by(replicate) %>%
+  #       nest() %>%
+  #       mutate(mod = map(data, ~ lm(data = ., z ~ gender))) %>%
+  #       mutate(reg_results = map(mod, ~ tidy(.))) %>%
+  #       mutate(estimate = map_dbl(reg_results, ~ slice(., 2) %>%
+  #         pull(estimate) %>%
+  #         round(4))) %>%
+  #       mutate(p_value = map_dbl(reg_results, ~ slice(., 2) %>%
+  #         pull(p.value) %>%
+  #         round(10)))
+  # 
+  #     boot_plot <- ggplot(bootstrap, aes(x = replicate, y = estimate)) +
+  #       geom_point() +
+  #       geom_hline(yintercept = avg) +
+  #       theme_classic() +
+  #       labs(
+  #         title = "Bootstrapped Mean Difference Compared to Actual Mean Difference"
+  #       )
+  # 
+  #     print(boot_plot)
+  #   }
+  # })
 
   # Here's just the density plot with all the data,
   # not modified by the user.
